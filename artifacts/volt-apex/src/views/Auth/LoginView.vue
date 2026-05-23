@@ -1,9 +1,9 @@
 <template>
   <div class="min-h-screen relative flex flex-col items-center justify-center px-4 overflow-hidden" style="background: var(--volt-black);">
-    <ParticleField />
+    <ParticleField class="absolute inset-0 z-0" />
 
-    <div class="relative z-10 w-full max-w-sm anim-fade-in-up">
-      <div class="text-center mb-8">
+    <div class="relative z-10 w-full max-w-sm" ref="containerRef">
+      <div class="text-center mb-8" ref="logoRef">
         <div class="logo-glass inline-block px-6 py-3 mb-3 relative cursor-pointer" @mouseenter="logoHover = true" @mouseleave="logoHover = false">
           <span class="font-heading text-3xl font-black text-gold-gradient tracking-widest">VOLT APEX</span>
           <div class="logo-ripple" :class="{ active: logoHover }"></div>
@@ -11,7 +11,7 @@
         <p class="text-sm" style="color: var(--volt-gray);">Myanmar Premier Gaming Platform</p>
       </div>
 
-      <div class="glass-card p-6 hud-bracket relative">
+      <div class="glass-card p-6 hud-bracket relative" ref="cardRef">
         <div class="scanning-line"></div>
 
         <h2 class="font-heading text-center mb-6 text-base tracking-wider" style="color: var(--volt-electric);">
@@ -97,6 +97,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth.store";
 import { useUiStore } from "@/stores/ui.store";
 import ParticleField from "@/components/three/ParticleField.vue";
+import gsap from "gsap";
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -112,8 +113,14 @@ const loading = ref(false);
 const logoHover = ref(false);
 const shakeError = ref(false);
 const onlineCount = ref(1243);
+const logoRef = ref<HTMLElement | null>(null);
+const cardRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
+  // GSAP entrance animations
+  const tl = gsap.timeline();
+  if (logoRef.value) tl.from(logoRef.value, { opacity: 0, y: -24, duration: 0.55, ease: "power3.out" });
+  if (cardRef.value) tl.from(cardRef.value, { opacity: 0, y: 28, duration: 0.45, ease: "power2.out" }, "-=0.25");
   setInterval(() => {
     onlineCount.value = 1200 + Math.floor(Math.random() * 200);
   }, 5000);
@@ -140,10 +147,11 @@ async function handleLogin() {
   loading.value = false;
   if (result.success) {
     ui.toast.success("ဝင်ရောက်မှု အောင်မြင်ပါသည်!");
-    router.push("/dashboard");
+    gsap.to(cardRef.value, { opacity: 0, y: -16, duration: 0.25, onComplete: () => router.push("/dashboard") });
   } else {
-    loginError.value = "ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေသည်";
+    loginError.value = result.error || "ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေသည်";
     shakeError.value = true;
+    if (cardRef.value) gsap.fromTo(cardRef.value, { x: -7 }, { x: 0, duration: 0.4, ease: "elastic.out(1,0.3)" });
     setTimeout(() => (shakeError.value = false), 500);
   }
 }

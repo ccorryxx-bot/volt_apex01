@@ -1,6 +1,7 @@
 <template>
-  <div class="min-h-screen flex flex-col items-center justify-center px-4" style="background: var(--volt-black);">
-    <ParticleField />
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 relative overflow-hidden" style="background: var(--volt-black);">
+    <ParticleField class="absolute inset-0 z-0" />
+    <div class="absolute inset-0 z-0" style="background: radial-gradient(ellipse at center, rgba(13,27,62,0.8) 0%, rgba(5,8,17,0.95) 70%);"></div>
     <div class="relative z-10 w-full max-w-sm anim-fade-in-up">
       <div class="text-center mb-6">
         <div class="logo-glass inline-block px-6 py-3 mb-2 cursor-pointer" @click="$router.push('/login')">

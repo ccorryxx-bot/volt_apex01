@@ -113,6 +113,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: "/admin/announcements",
+      name: "AdminAnnouncements",
+      component: () => import("@/views/Admin/AnnouncementsView.vue"),
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
       path: "/:pathMatch(.*)*",
       name: "NotFound",
       component: () => import("@/views/NotFound.vue"),

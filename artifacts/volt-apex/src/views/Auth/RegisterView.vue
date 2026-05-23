@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen relative flex flex-col items-center justify-center px-4 py-8 overflow-hidden" style="background: var(--volt-black);">
-    <ParticleField />
+    <ParticleField class="absolute inset-0 z-0" />
 
     <div class="relative z-10 w-full max-w-sm anim-fade-in-up">
       <div class="text-center mb-6">

@@ -34,6 +34,7 @@ export default defineConfig({
   },
   define: {
     "import.meta.env.VITE_SUPABASE_URL": JSON.stringify("https://kygawsofkdbyoywgydqn.supabase.co"),
+    "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY ?? ""),
   },
   root: path.resolve(import.meta.dirname),
   build: {

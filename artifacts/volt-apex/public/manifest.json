@@ -1,0 +1,21 @@
+{
+  "name": "VOLT APEX",
+  "short_name": "VOLT APEX",
+  "description": "မြန်မာ့ ထိပ်တန်း Online Gaming Platform",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#050811",
+  "theme_color": "#D4AF37",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "my",
+  "dir": "ltr"
+}
