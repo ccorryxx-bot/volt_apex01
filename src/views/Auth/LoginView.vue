@@ -4,7 +4,7 @@
 
     <div class="relative z-10 w-full max-w-sm" ref="containerRef">
       <div class="text-center mb-8" ref="logoRef">
-        <div class="logo-glass inline-block px-6 py-3 mb-3 relative cursor-pointer" @mouseenter="logoHover = true" @mouseleave="logoHover = false">
+        <div class="logo-glass inline-block px-6 py-3 mb-3 relative cursor-pointer" @click="$router.push('/')" @mouseenter="logoHover = true" @mouseleave="logoHover = false">
           <span class="font-heading text-3xl font-black text-gold-gradient tracking-widest">VOLT APEX</span>
           <div class="logo-ripple" :class="{ active: logoHover }"></div>
         </div>
@@ -20,21 +20,21 @@
 
         <form @submit.prevent="handleLogin" novalidate>
           <div class="mb-4">
-            <label class="block text-xs mb-1.5 font-medium" style="color: var(--volt-gray);">ဖုန်းနံပါတ်</label>
+            <label class="block text-xs mb-1.5 font-medium" style="color: var(--volt-gray);">Username</label>
             <div class="relative">
-              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm" style="color: var(--volt-electric);">+95</span>
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm" style="color: var(--volt-electric);">@</span>
               <input
-                v-model="phone"
-                type="tel"
-                placeholder="9xxxxxxxxx"
-                inputmode="tel"
-                class="w-full h-12 pl-12 pr-4 rounded-xl text-sm outline-none transition-all"
+                v-model="username"
+                type="text"
+                placeholder="voltplayer01"
+                autocomplete="username"
+                class="w-full h-12 pl-10 pr-4 rounded-xl text-sm outline-none transition-all"
                 style="background: rgba(5,8,17,0.8); border: 1px solid rgba(0,212,255,0.2); color: var(--volt-white);"
-                :style="phoneError ? 'border-color: var(--volt-red);' : ''"
-                @focus="phoneError = ''"
+                :style="usernameError ? 'border-color: var(--volt-red);' : ''"
+                @focus="usernameError = ''"
               />
             </div>
-            <p v-if="phoneError" class="text-xs mt-1" style="color: var(--volt-red);">{{ phoneError }}</p>
+            <p v-if="usernameError" class="text-xs mt-1" style="color: var(--volt-red);">{{ usernameError }}</p>
           </div>
 
           <div class="mb-6">
@@ -44,6 +44,7 @@
                 v-model="password"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="••••••••"
+                autocomplete="current-password"
                 class="w-full h-12 pl-4 pr-11 rounded-xl text-sm outline-none transition-all"
                 style="background: rgba(5,8,17,0.8); border: 1px solid rgba(0,212,255,0.2); color: var(--volt-white);"
                 :style="passwordError ? 'border-color: var(--volt-red);' : ''"
@@ -80,7 +81,9 @@
       </div>
 
       <div class="mt-4 text-center">
-        <span class="text-xs" style="color: var(--volt-gray);">🔒 လုံခြုံသောချိတ်ဆက်မှု · <span style="color: var(--volt-emerald);">✓ အကောင့်ဖွင့်ခ အခမဲ့</span></span>
+        <button class="text-xs" style="color: var(--volt-gray);" @click="$router.push('/')">
+          ← Site သို့ ပြန်သွားမည်
+        </button>
       </div>
 
       <div class="mt-3 text-center">
@@ -103,10 +106,10 @@ const router = useRouter();
 const auth = useAuthStore();
 const ui = useUiStore();
 
-const phone = ref("");
+const username = ref("");
 const password = ref("");
 const showPassword = ref(false);
-const phoneError = ref("");
+const usernameError = ref("");
 const passwordError = ref("");
 const loginError = ref("");
 const loading = ref(false);
@@ -117,7 +120,6 @@ const logoRef = ref<HTMLElement | null>(null);
 const cardRef = ref<HTMLElement | null>(null);
 
 onMounted(() => {
-  // GSAP entrance animations
   const tl = gsap.timeline();
   if (logoRef.value) tl.from(logoRef.value, { opacity: 0, y: -24, duration: 0.55, ease: "power3.out" });
   if (cardRef.value) tl.from(cardRef.value, { opacity: 0, y: 28, duration: 0.45, ease: "power2.out" }, "-=0.25");
@@ -128,8 +130,8 @@ onMounted(() => {
 
 function validate() {
   let valid = true;
-  if (!phone.value || phone.value.replace(/\D/g, "").length < 7) {
-    phoneError.value = "ဖုန်းနံပါတ် မှန်ကန်စွာ ထည့်ပါ";
+  if (!username.value || username.value.trim().length < 3) {
+    usernameError.value = "Username အနည်းဆုံး ၃ လုံး ရှိရမည်";
     valid = false;
   }
   if (!password.value || password.value.length < 6) {
@@ -143,13 +145,13 @@ async function handleLogin() {
   loginError.value = "";
   if (!validate()) return;
   loading.value = true;
-  const result = await auth.login(phone.value, password.value);
+  const result = await auth.login(username.value.trim(), password.value);
   loading.value = false;
   if (result.success) {
     ui.toast.success("ဝင်ရောက်မှု အောင်မြင်ပါသည်!");
     gsap.to(cardRef.value, { opacity: 0, y: -16, duration: 0.25, onComplete: () => router.push("/dashboard") });
   } else {
-    loginError.value = result.error || "ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မှားယွင်းနေသည်";
+    loginError.value = result.error || "Username သို့မဟုတ် စကားဝှက် မှားယွင်းနေသည်";
     shakeError.value = true;
     if (cardRef.value) gsap.fromTo(cardRef.value, { x: -7 }, { x: 0, duration: 0.4, ease: "elastic.out(1,0.3)" });
     setTimeout(() => (shakeError.value = false), 500);
