@@ -4,8 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
 export default defineConfig({
-  // GitHub Pages အတွက် base path ကို repository name အတိုင်း သတ်မှတ်ပေးရပါမယ်
-  base: "/volt_apex01/",
+  // Vercel သို့မဟုတ် Custom Domain အတွက် base path ကို '/' ထားရပါမယ်
+  base: "/",
   plugins: [
     vue(),
     tailwindcss(),
@@ -21,7 +21,7 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist"),
+    outDir: "dist",
     emptyOutDir: true,
   },
 });
