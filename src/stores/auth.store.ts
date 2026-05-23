@@ -47,10 +47,11 @@ export const useAuthStore = defineStore("auth", () => {
     if (data) profile.value = data as UserProfile;
   }
 
-  async function login(phone: string, password: string) {
+  // Login with username — internally converts to fake email
+  async function login(username: string, password: string) {
     loading.value = true;
     try {
-      const email = phoneToEmail(phone);
+      const email = usernameToEmail(username);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       user.value = data.user;
@@ -72,7 +73,8 @@ export const useAuthStore = defineStore("auth", () => {
   }) {
     loading.value = true;
     try {
-      const email = phoneToEmail(payload.phone);
+      // Generate fake email from username
+      const email = usernameToEmail(payload.username);
       const cleanPhone = payload.phone.replace(/\D/g, "");
 
       // Check username uniqueness
@@ -109,7 +111,6 @@ export const useAuthStore = defineStore("auth", () => {
 
       const authUser = data.user;
       if (authUser) {
-        // Manually insert into users table (needed if trigger not set up)
         await supabase.from("users").upsert({
           id: authUser.id,
           username: payload.username,
@@ -124,8 +125,6 @@ export const useAuthStore = defineStore("auth", () => {
           referral_code: refCode,
           referred_by: referrerId,
           nft_avatar_url: avatarUrl,
-          is_active: true,
-          is_banned: false,
         });
 
         user.value = authUser;
@@ -159,15 +158,15 @@ export const useAuthStore = defineStore("auth", () => {
     return !error;
   }
 
-  function phoneToEmail(phone: string) {
-    const clean = phone.replace(/\D/g, "");
-    return `${clean}@voltapex.mm`;
+  // Convert username to fake email for Supabase Auth
+  function usernameToEmail(username: string) {
+    return `${username.toLowerCase().trim()}@voltapex.mm`;
   }
 
   function translateError(msg: string): string {
-    if (msg.includes("Invalid login credentials")) return "ဖုန်းနံပါတ် သို့မဟုတ် စကားဝှက် မမှန်ကန်ပါ";
-    if (msg.includes("Email not confirmed"))       return "Email မှ Confirm မပြုလုပ်သေးပါ";
-    if (msg.includes("User already registered"))   return "ဖုန်းနံပါတ် ရှိပြီး ဖြစ်သည်";
+    if (msg.includes("Invalid login credentials")) return "Username သို့မဟုတ် စကားဝှက် မမှန်ကန်ပါ";
+    if (msg.includes("Email not confirmed"))       return "အကောင့် အတည်ပြုချက် မပြုလုပ်သေးပါ";
+    if (msg.includes("User already registered"))   return "Username ရှိပြီး ဖြစ်သည်";
     if (msg.includes("Password should be"))        return "စကားဝှက် အနည်းဆုံး 6 လုံး ရှိရမည်";
     return msg;
   }
